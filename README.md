@@ -32,6 +32,9 @@ Use the web installer on [The Firmware Hub](https://thefirmwarehub.com/) (Chrome
 To leave MODELAR, install any other firmware the same way (the official V15 included). Hold **OCT−** and **OCT+**
 for 5 seconds for the update mode.
 
+Tested on a real FM-1 (0.3): installed over V15 and over Felucca, and left again for V15 and for Felucca; it shows
+as a USB MIDI device and answers the identity request with FM-1_42000300.
+
 ### What it keeps, and what it overwrites
 
 MODELAR keeps its patches in the FM-1's flash data area (0x97000–0xC9FFF: 16 slots and a backup), the panel calibration at 0xDC000, and its system
@@ -95,7 +98,7 @@ Inside a page, **SELECT** picks the row, **PRESETS** the parameter and **ALGO** 
 
 ## Build
 
-    git clone --recurse-submodules <this repository>
+    git clone --recurse-submodules https://github.com/hirakos999/MODELAR.git
     ./build.sh                       # app/build/modelar.fwsc
     ./build.sh --release 0.3         # app/build/modelar-0.3.fwsc, identity FM-1_42000300
     ./build.sh --host && app/build/host/modelar_host app/tests/basic.txt app/build/host   # tests, screenshots, WAV
