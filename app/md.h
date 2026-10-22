@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MPL-2.0
+ * Copyright (C) 2026 Hirakos */
 /* MODELAR: what the engine (engine.c, at block rate in the audio interrupt) and the panel (ui.c, the main loop)
  * share: the patch, the patterns, the system settings and the commands from the panel to the engine. */
 #pragma once

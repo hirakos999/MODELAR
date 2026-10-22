@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MPL-2.0
+ * Copyright (C) 2026 Hirakos */
 /* MODELAR: the sound (synth.h). Its own unit, compiled at -O2. */
 #include "synth.h"
 #include "fastmath.h"

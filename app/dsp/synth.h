@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MPL-2.0
+ * Copyright (C) 2026 Hirakos */
 /* MODELAR: the sound. Four oscillators always sounding (a drone), routed into each other by an algorithm
  * (ALGO), then the FX chain, in stereo from the chorus on:
  *

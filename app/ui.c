@@ -1,5 +1,7 @@
+/* SPDX-License-Identifier: MPL-2.0
+ * Copyright (C) 2026 Hirakos */
 /* MODELAR: the panel and the screen (main loop). Part of the unity build (app.c), after the platform: gfx.c and
- * announce.c are in scope. The map of every control is firmware_hoc/MAPPA_FM1.md; in short:
+ * announce.c are in scope. Every control is in README.md; in short:
  *
  *   white keys   the KAOS PAD's 16 points (SEL + key: HOLD there)     black keys  gestures (SEL + key: LATCH)
  *   SELECT       the active oscillator (SEL: the clock's rate)        on a page: its rows

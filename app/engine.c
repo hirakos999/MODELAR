@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MPL-2.0
+ * Copyright (C) 2026 Hirakos */
 /* MODELAR: the engine, at block rate in the audio interrupt (app_render, before syn_render). It turns the patch,
  * the keys that play the pad, the clock and its followers (LFOs, gestures, ARP, SEQ), the environment's drift and
  * MIDI into the sound's parameters (synth.h syn_in). Part of the unity build (app.c).

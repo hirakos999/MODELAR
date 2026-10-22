@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-License-Identifier: MPL-2.0
+# Copyright (C) 2026 Hirakos
 # Build MODELAR with fm1-base (base/, a git submodule).
 #   ./build.sh [--release X.Y] [--host | --web]
 #   JIELI_TOOLCHAIN  JieLi Linux toolchain (default: ~/.jieli/toolchain)
@@ -10,6 +12,7 @@ export JIELI_TOOLCHAIN="${JIELI_TOOLCHAIN:-$HOME/.jieli/toolchain}"
 export AC79_SDK="${AC79_SDK:-$HOME/fw-AC79_AIoT_SDK}"
 if [ -z "$PYTHON" ] && [ -x "$HOME/fm1/.venv/bin/python" ]; then PYTHON="$HOME/fm1/.venv/bin/python"; fi
 PY="${PYTHON:-python3}"
+[ -f base/tools/build.py ] || git submodule update --init --recursive   # (a fresh checkout, CI)
 [ -f base/tools/build.py ] || { echo "build.sh: no fm1-base in base/ (git submodule update --init --recursive)"; exit 1; }
 "$PY" -c 'import PIL' 2>/dev/null || { echo "build.sh: $PY has no Pillow (pip3 install Pillow)"; exit 1; }
 exec "$PY" base/tools/build.py app "$@"

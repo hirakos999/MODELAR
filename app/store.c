@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: MPL-2.0
+ * Copyright (C) 2026 Hirakos */
 /* MODELAR: the patches in the flash. Sixteen slots and a quick backup, each a patch and its eight patterns, in
  * fm1-base's data area (plat_data: 3 sectors a slot from 0x97000; the panel calibration's pair at 0xDC000 stays
  * clear), checked by a CRC. The system settings are a store object of their own (A/B, torn-write safe).

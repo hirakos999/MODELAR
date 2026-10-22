@@ -1,4 +1,6 @@
-/* MODELAR: a semi-modular drone synth played like a Kaoss Pad (docs: firmware_hoc/MAPPA_FM1.md).
+/* SPDX-License-Identifier: MPL-2.0
+ * Copyright (C) 2026 Hirakos */
+/* MODELAR: a semi-modular drone synth played like a Kaoss Pad (README.md).
  * This header is the app's half of the contract with fm1-base (device/unity.c, host/plat_host.c). */
 #pragma once
 #include <stdint.h>
