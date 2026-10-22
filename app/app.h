@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "plat.h"
 #include "synth.h"
+#include "md.h"
 
 #define APP_NAME "MODELAR"
 #define APP_SPLASH_RGB RGB(255, 46, 136)
@@ -15,8 +16,8 @@
 #define MD_VERSION "DEV"
 #endif
 
-/* the store: the patch, and the panel calibration (the platform's) */
-enum { OBJ_PATCH, OBJ_PANEL, OBJ_NOBJ };
+/* the store: the system settings and the panel calibration (the platform's); the patches are in the data area (store.c) */
+enum { OBJ_SYS, OBJ_PANEL, OBJ_NOBJ };
 #define APP_STORE_MAP {0xFC000u, 0xDC000u}
 
 /* the contract: the platform calls these */

@@ -1,12 +1,10 @@
-/* MODELAR: the instrument. Four oscillators always sounding (a drone), routed into each other by an
- * algorithm (ALGO), then a low-pass filter. A cursor on an XY pad (the KAOS PAD, played on the white
- * keys) modulates them: X the filter's cutoff and the morphing waves, Y how hard the oscillators
- * modulate each other. The pad's effect fades in while a key is touched and out when it is let go.
+/* MODELAR: the sound. Four oscillators always sounding (a drone), routed into each other by an algorithm
+ * (ALGO), then the FX chain, in stereo from the chorus on:
  *
- *   OSC1..4 -> ROUTING (ALGO) -> VCF -> soft clip -> MASTER
+ *   OSC1..4 -> ROUTING -> VCF -> DRIVE -> FOLD -> RING -> CRUSH -> VCA -> CHORUS -> DELAY -> REVERB -> soft clip
  *
- * Threads: syn_render() runs in the audio interrupt and reads syn_in once a block; the UI writes
- * syn_in (whole words, so a block sees each value old or new, never torn) and reads syn_out.
+ * syn_render() runs in the audio interrupt; its parameters (syn_in) are set by the engine (engine.c) at the start
+ * of each block, in the same interrupt, and glided across the block here where a step would click.
  * Float only, no libm: fastmath.h. */
 #pragma once
 #include <stdint.h>
@@ -18,6 +16,7 @@
 enum { W_SINE, W_TRI, W_SAW, W_SQUARE, W_PULSE, W_SSAW, W_NOISE, W_SH, W_MORPH, W_FM2, W_FORMANT, W_CHAOS,
        SYN_NWAVES };
 enum { A_MIX, A_PAIRS, A_CHAIN, A_RING, A_SYNC, A_CROSS, A_AM, A_FEEDBACK, SYN_NALGOS };
+enum { VCF_LP, VCF_BP, VCF_HP };
 
 extern const char *const SYN_WAVE_NAME[SYN_NWAVES];
 extern const char *const SYN_WAVE_SHORT[SYN_NWAVES];
@@ -25,29 +24,33 @@ extern const char *const SYN_ALGO_NAME[SYN_NALGOS];
 
 typedef struct {
     int32_t wave[SYN_NOSC];              /* W_* */
-    int32_t semi[SYN_NOSC];              /* semitones from SYN_BASE_NOTE, -48..+48 */
-    int32_t fine[SYN_NOSC];              /* cents, -50..+50 */
-    int32_t vol[SYN_NOSC];               /* 0..100 */
+    float note[SYN_NOSC];                /* MIDI note, fractional */
+    float gain[SYN_NOSC];                /* 0..1 (the knob's curve already applied) */
+    float xm[SYN_NOSC];                  /* how hard each is modulated by the routing, 0..1 */
     int32_t algo;                        /* A_* */
-    int32_t touch;                       /* keys held on the pad: 0 = let go; more keys, more intense */
-    int32_t tx, ty;                      /* the cursor's target, 0..1000 (it glides there: slew_ms) */
-    int32_t slew_ms;                     /* the cursor's glide, 0..2000 */
-    int32_t attack_ms, release_ms;       /* the pad's effect fading in on a touch, out on letting go */
-    int32_t range;                       /* 0..100: the most the pad can modulate ("not too aggressive") */
+    float morph;                         /* 0..1: the morphing waves, the pulse's width */
+    int32_t vcf_on, vcf_mode;
+    float cutoff, reso;                  /* Hz; 0..1 */
+    float drive, drive_tone;             /* 0..1 each: drive 0 = out of the chain */
+    float fold, fold_sym;
+    float ring, ring_hz;
+    float crush_bits, crush_rate;        /* 0..1 each: 0 = untouched */
+    float vca;                           /* the level, 0..1 */
+    float chorus, chorus_rate, chorus_depth;   /* mix 0..1, Hz, 0..1 */
+    float delay, delay_s, delay_fb;      /* mix 0..1, seconds, 0..1 */
+    float reverb, rev_size, rev_damp;    /* mix 0..1, 0..1, 0..1 */
 } syn_in_t;
 
 typedef struct {
-    int32_t cx, cy;                      /* the cursor where it is now, 0..1000 */
-    int32_t amt;                         /* the pad's effect now, 0..1000 */
     int32_t level[SYN_NOSC];             /* each oscillator's output level, 0..1000 (the bars breathe with it) */
-    int32_t cutoff_hz;                   /* the filter now */
-    int32_t xmod;                        /* the cross-modulation now, 0..1000 */
+    int32_t out_level;                   /* the output's, 0..1000 */
 } syn_out_t;
 
-extern volatile syn_in_t syn_in;
+extern syn_in_t syn_in;
 extern volatile syn_out_t syn_out;
 
 void syn_init(void);
 void syn_render(int32_t *lr, uint32_t n, uint32_t master_q12);   /* audio interrupt: n stereo frames, 24-bit */
-void syn_panic(void);                                            /* silence now: volumes to 0 at once */
+void syn_panic(void);                                            /* silence now, for good (an update follows) */
 float syn_wave_preview(int32_t wave, float ph, float morph);     /* one cycle for the screen: ph 0..1, -1..1 */
+float syn_osc_hz(int i);                                         /* an oscillator's frequency now */

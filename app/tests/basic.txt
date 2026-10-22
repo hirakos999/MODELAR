@@ -1,8 +1,8 @@
 # MODELAR in the host simulator: ./build.sh --host, then
 #   app/build/host/modelar_host app/tests/basic.txt app/build/host
 wait 700
-shot splash_to_kaos.png
-# silent at power-on: every volume at 0
+shot p_kaos_boot.png
+expect page 0
 expect vol1 0
 expect vol4 0
 master 3000
@@ -10,89 +10,283 @@ wav drone.wav
 turn K1 20
 turn K2 15
 turn K3 10
-turn K4 6
-wait 400
+wait 300
 expect vol1 40
-expect vol2 30
-# the pad: one white key (w5 = column 1, row 1), the cursor glides there
+# ---- the pad: a key, the cursor glides there; two keys, between
 key w5 down
-wait 30
-expect touch 1
-expect tx 333
-expect ty 333
 wait 1200
 expect cx >300
-expect amt >600
-shot kaos_touch.png
-# two keys: between them
+expect amt >500
 key w15 down
 wait 1500
-expect touch 2
-expect tx 666
 expect cx >600
-shot kaos_two.png
+shot p_kaos_touch.png
 key w5 up
 key w15 up
 wait 1500
-expect touch 0
 expect amt <150
-wavstop
-# routing and waves
-turn ALGO 2
-wait 50
-expect algo 7
-turn SELECT 1
-wait 50
-expect sel 1
-turn PRESET 2
-wait 50
-expect wave 2
-shot overlay_wave.png
-# tone: a semitone, an octave with SHIFT (SEL held), both = back to 0
+# ---- tone, shift
 tap OCT+
 wait 50
-expect semi 8
+expect semi 1
 press SEL
 wait 20
 expect shift 1
 tap OCT-
-wait 50
+wait 30
 release SEL
-expect semi -4
+expect semi -11
 press OCT-
 press OCT+
 wait 50
 release OCT-
 release OCT+
 expect semi 0
-# SHIFT locked: two clean taps (not counting the SEL just used as SHIFT)
-wait 400
-tap SEL
+# ---- FX page: DRIVE on
+tap FX
 wait 100
-tap SEL
+expect page 2
+turn SELECT 2
 wait 50
-expect shift 1
-turn K2 3
+expect row 2
+turn ALGO 1
 wait 50
-expect fine 3
-tap SEL
+expect fxon2 1
+turn PRESET 1
+turn ALGO 10
+wait 100
+expect fxamt2 >30
+shot p_fx.png
+tap FX
+wait 100
+expect page 0
+# FX held: open only while held
+press FX
+wait 700
+expect page 2
+release FX
 wait 50
-expect shift 0
-# the bars
-tap HOME
+expect page 0
+# SEL + FX: bypass
+press SEL
+tap FX
+release SEL
+wait 30
+expect bypass 1
+press SEL
+tap FX
+release SEL
+wait 30
+expect bypass 0
+# ---- ENV: FORESTA (2 -> 4th), its drift
+tap ENV
+wait 50
+turn ALGO 2
+wait 50
+expect env 3
+expect drift 20
+shot p_env.png
+tap ENV
+wait 50
+# ---- HOLD: SEL + white
+press SEL
+tapkey w0
+release SEL
+wait 1500
+expect hold 0
+expect cx <100
+expect amt >500
+press SEL
+tapkey w0
+release SEL
+wait 30
+expect hold -1
+# ---- gestures: a black key held; SEL + black: latch; SEL + F#5: all stop
+key b0 down
 wait 600
+expect gest 1
+shot p_kaos_gesture.png
+key b0 up
+wait 30
+expect gest 0
+press SEL
+tapkey b2
+release SEL
+wait 100
+expect latched 4
+press SEL
+tapkey b10
+release SEL
+wait 50
+expect latched 0
+# ---- ARP: SEL + ARP on; two keys
+press SEL
+tap ARP
+release SEL
+wait 30
+key w0 down
+key w3 down
+wait 1500
+expect arp_pt >-1
+key w0 up
+key w3 up
+press SEL
+tap ARP
+release SEL
+wait 1000
+# ---- SEQ: steps, play
+tap SEQ
+wait 50
+expect page 8
+tapkey w0
+tapkey w4
+tapkey w8
+wait 50
+expect kstep0 1
+expect kstep4 1
+shot p_seq.png
+tap PLAY
+wait 1500
+expect playing 1
+expect pos >0
+shot p_seq_play.png
+tap PLAY
+wait 50
+expect playing 0
+# lane OSC1 (black 5), then step entry with REC while stopped
+tapkey b5
+wait 30
+expect lane 1
+tap SEQ
+wait 50
+tap REC
+wait 30
+expect rec 1
+tapkey w7
+tapkey w9
+tap REC
+wait 30
+expect ostep0 1
+expect ostep1 1
+tap SEQ
+wait 50
+tapkey b4
+tap SEQ
+wait 50
+# ---- the clock: SEL + SELECT; tap tempo
+press SEL
+turn SELECT 3
+release SEL
+wait 30
+expect clock 215
+press SEL
+tap PLAY
+wait 420
+tap PLAY
+wait 420
+tap PLAY
+release SEL
+wait 30
+expect clock >190
+expect clock <230
+# ---- LFO, EDIT, ARP, GLO pages, screenshots
+tap LFO
+wait 50
+turn SELECT 1
+turn PRESET 3
+turn ALGO 1
+wait 50
+shot p_lfo.png
+tap LFO
+tap EDIT
+wait 50
+shot p_edit.png
+tap EDIT
+tap ARP
+wait 50
+shot p_arp.png
+tap ARP
+tap GLO
+wait 50
+shot p_glo_empty.png
+tapkey b1
+wait 50
+expect glo_key 3
+shot p_glo_black.png
+tapkey w0
+turn ALGO 5
+wait 50
+expect glo_key 0
+shot p_glo_white.png
+# copy w0, then GLO held + w1: pasted, the page stays
+press SEL
+tap GLO
+release SEL
+press GLO
+tapkey w1
+release GLO
+wait 50
+expect page 6
+expect glo_key 2
+tap GLO
+wait 50
+expect page 0
+# ---- BARS
+tap HOME
+wait 400
 expect page 1
-shot bars.png
-# saved across a power cycle; the volumes start at 0 again
+shot p_bars.png
+tap HOME
+wait 50
+expect page 0
+# ---- SYSTEM
+press SEL
+tap HOME
+release SEL
+wait 50
+expect page 10
+turn ALGO 2
+wait 30
+expect midi_ch 2
+shot p_sys.png
+tap HOME
+wait 50
+# ---- MIDI in (channel 2, as SYSTEM says): CC 14 = OSC1 volume
+midi B1 0E 40
+wait 30
+expect vol1 50
+wavstop
+# ---- save, then a power cycle
 expect dirty 1
 tap SAVE
-wait 50
+wait 300
 expect dirty 0
+expect slot 0
 reboot
 wait 700
-expect algo 7
-expect page 1
-expect sel 1
-expect wave 2
-expect fine 3
+expect env 3
+expect kstep0 1
 expect vol1 0
+expect midi_ch 2
+# ---- SLOTS: save into 2, then load 1 back
+press SEL
+tap SAVE
+release SEL
+wait 50
+expect page 9
+turn SELECT 1
+turn ALGO 1
+wait 50
+tap SAVE
+wait 300
+expect slot 1
+shot p_slots.png
+turn SELECT -1
+turn ALGO -1
+wait 50
+tap SAVE
+wait 300
+expect slot 0
+tap HOME
+wait 50
+expect page 0
