@@ -1,0 +1,16 @@
+# MODELAR's build settings (fm1-base's tools/build.py: ./build.sh)
+name = "MODELAR"               # the build's files: modelar.fwsc, modelar-X.Y.fwsc
+id_prefix = "FM-1_42"          # package identity: dev FM-1_4200, releases FM-1_42XXYYZZ
+usb_manufacturer = "MODELAR"
+usb_product = "MODELAR FM-1"
+ble = false                    # v0.1: USB only
+usb_audio_in = true            # the drone recordable over USB
+usb_audio_out = false
+words = "words.tsv"
+include = ["dsp"]
+o2 = ["dsp/synth.c"]           # the instrument, at -O2
+# the site
+tagline = "four oscillators played like a Kaoss Pad"
+repo = ""
+licence = "MPL-2.0"
+credits = "Built on fm1-base and felucca-bsp, from Felucca by Leo Kuroshita (Hügelton Instruments)."

@@ -1,0 +1,98 @@
+# MODELAR in the host simulator: ./build.sh --host, then
+#   app/build/host/modelar_host app/tests/basic.txt app/build/host
+wait 700
+shot splash_to_kaos.png
+# silent at power-on: every volume at 0
+expect vol1 0
+expect vol4 0
+master 3000
+wav drone.wav
+turn K1 20
+turn K2 15
+turn K3 10
+turn K4 6
+wait 400
+expect vol1 40
+expect vol2 30
+# the pad: one white key (w5 = column 1, row 1), the cursor glides there
+key w5 down
+wait 30
+expect touch 1
+expect tx 333
+expect ty 333
+wait 1200
+expect cx >300
+expect amt >600
+shot kaos_touch.png
+# two keys: between them
+key w15 down
+wait 1500
+expect touch 2
+expect tx 666
+expect cx >600
+shot kaos_two.png
+key w5 up
+key w15 up
+wait 1500
+expect touch 0
+expect amt <150
+wavstop
+# routing and waves
+turn ALGO 2
+wait 50
+expect algo 7
+turn SELECT 1
+wait 50
+expect sel 1
+turn PRESET 2
+wait 50
+expect wave 2
+shot overlay_wave.png
+# tone: a semitone, an octave with SHIFT (SEL held), both = back to 0
+tap OCT+
+wait 50
+expect semi 8
+press SEL
+wait 20
+expect shift 1
+tap OCT-
+wait 50
+release SEL
+expect semi -4
+press OCT-
+press OCT+
+wait 50
+release OCT-
+release OCT+
+expect semi 0
+# SHIFT locked: two clean taps (not counting the SEL just used as SHIFT)
+wait 400
+tap SEL
+wait 100
+tap SEL
+wait 50
+expect shift 1
+turn K2 3
+wait 50
+expect fine 3
+tap SEL
+wait 50
+expect shift 0
+# the bars
+tap HOME
+wait 600
+expect page 1
+shot bars.png
+# saved across a power cycle; the volumes start at 0 again
+expect dirty 1
+tap SAVE
+wait 50
+expect dirty 0
+reboot
+wait 700
+expect algo 7
+expect page 1
+expect sel 1
+expect wave 2
+expect fine 3
+expect vol1 0
