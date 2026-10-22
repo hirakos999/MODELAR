@@ -1771,6 +1771,12 @@ static void speak(void)                  /* a screen reader that has just starte
         text_cat(t, SYN_ALGO_NAME[patch.algo]);
         text_cat(t, ". ");
         text_cat(t, ENV_NAME[patch.env & 7]);
+        if (ui.page == P_SYS) {          /* (fm1_remote.py screen: the load, without looking) */
+            text_cat(t, ". AUDIO LOAD ");
+            int_cat(t, (int32_t)plat_cpu_pct(), 0);
+            text_cat(t, " PERCENT, XRUNS ");
+            int_cat(t, (int32_t)plat_xruns(), 0);
+        }
         ann_say(t, 0, ANN_NOW);
     }
     ann_tick(plat_ms());
