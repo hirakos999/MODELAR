@@ -114,3 +114,5 @@ Charles Vestal (MPL-2.0) and felucca-bsp, from [Felucca](https://github.com/huge
 (Hügelton Instruments). The fonts and the JieLi SDK files keep their own licences (fm1-base's LICENSING.md).
 
 Installing firmware is at your own risk.
+
+You can also try MODELAR in the browser, no flashing needed, in the free community [FM-1 Emulator](https://fm1-emulator.atst.tools/).
